@@ -1,0 +1,42 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tsb_bank
+    username: tsb
+    password: tsb
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    open-in-view: false
+  flyway:
+    enabled: false
+
+app:
+  jwt:
+    secret: "change-me-very-long-secret-key-should-be-256-bit"
+    accessMinutes: 15
+    refreshDays: 7
+  crypto:
+    aesKeyB64: "k6eC0h3Atf4d3b7J1k8jYz1o3kU5mP8eTksb3P2iQwQ="
+    hmacKeyB64: "tbeAil0vmQK6eBe7NNqnTjar7EYIrTHb8h83jy58Csk="
+  cors:
+    allowed-origins: "http://localhost:5173"
+  otp:
+    provider: twilio
+    twilio:
+      accountSid: AC48f275f3b368ef7767a34f07e33516fb
+      authToken: 318913a7d7e9bedebacb62f15e8d5a52
+      verifyServiceSid: VAed91b4749b31090c53e6ecafcd0453b0
+
+logging:
+  level:
+    org.springframework.security: INFO
+    com.tsb.banking: DEBUG

@@ -1,0 +1,274 @@
+{
+	"info": {
+		"_postman_id": "a56d2274-fc51-499b-84d7-3e4bf4558311",
+		"name": "TSB Banking API",
+		"description": "Register, login, refresh, password reset with Twilio Verify (request-reset → verify-reset → reset-password), account transfers & transfer history by account number.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "23070658"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"fullName\": \"{{fullName}}\",\n  \"email\": \"{{email}}\",\n  \"phone\": \"{{phone}}\",\n  \"password\": \"{{password}}\"\n}"
+				},
+				"url": "{{baseUrl}}/api/auth/register"
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status 200', () => pm.response.to.have.status(200));",
+							"let data={}; try{ data = pm.response.json(); }catch(e){}",
+							"// Capture both naming styles just in case",
+							"if (data.accessToken) pm.collectionVariables.set('accessToken', data.accessToken);",
+							"if (data.refreshToken) pm.collectionVariables.set('refreshToken', data.refreshToken);",
+							"if (data.access) pm.collectionVariables.set('accessToken', data.access);",
+							"if (data.refresh) pm.collectionVariables.set('refreshToken', data.refresh);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+				},
+				"url": "{{baseUrl}}/api/auth/login"
+			},
+			"response": []
+		},
+		{
+			"name": "Refresh",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status 200', () => pm.response.to.have.status(200));",
+							"let data={}; try{ data = pm.response.json(); }catch(e){}",
+							"if (data.accessToken) pm.collectionVariables.set('accessToken', data.accessToken);",
+							"if (data.refreshToken) pm.collectionVariables.set('refreshToken', data.refreshToken);",
+							"if (data.access) pm.collectionVariables.set('accessToken', data.access);",
+							"if (data.refresh) pm.collectionVariables.set('refreshToken', data.refresh);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+				},
+				"url": "{{baseUrl}}/api/auth/refresh"
+			},
+			"response": []
+		},
+		{
+			"name": "Request Reset (send OTP)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"emailOrPhone\": \"{{email}}\"\n}"
+				},
+				"url": "{{baseUrl}}/api/auth/request-reset"
+			},
+			"response": []
+		},
+		{
+			"name": "Verify Reset (OTP → resetToken)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status 200', () => pm.response.to.have.status(200));",
+							"let data={}; try{ data = pm.response.json(); }catch(e){}",
+							"if (data.resetToken) pm.collectionVariables.set('resetToken', data.resetToken);",
+							"if (data.expiresInSeconds) pm.collectionVariables.set('resetTokenExpiresIn', data.expiresInSeconds);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{email}}\",\n  \"code\": \"{{otpCode}}\"\n}"
+				},
+				"url": "{{baseUrl}}/api/auth/verify-reset"
+			},
+			"response": []
+		},
+		{
+			"name": "Reset Password (use resetToken)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"resetToken\": \"{{resetToken}}\",\n  \"newPassword\": \"{{newPassword}}\"\n}"
+				},
+				"url": "{{baseUrl}}/api/auth/reset-password"
+			},
+			"response": []
+		},
+		{
+			"name": "List Accounts (by customerId)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{accessToken}}"
+					}
+				],
+				"url": "{{baseUrl}}/api/customers/{{customerId}}/accounts"
+			},
+			"response": []
+		},
+		{
+			"name": "Transfers for Account (by accountNumber)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{accessToken}}"
+					}
+				],
+				"url": "{{baseUrl}}/api/accounts/{{accountNumberFrom}}/transactions"
+			},
+			"response": []
+		},
+		{
+			"name": "Transfer (from → to by accountNumber)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{accessToken}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"fromAccount\": \"{{accountNumberFrom}}\",\n  \"toAccount\": \"{{accountNumberTo}}\",\n  \"amount\": \"50.00\",\n  \"description\": \"Test transfer\"\n}"
+				},
+				"url": "{{baseUrl}}/api/accounts/transfer"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "fullName",
+			"value": "Alice Example"
+		},
+		{
+			"key": "email",
+			"value": "alice@example.com"
+		},
+		{
+			"key": "phone",
+			"value": "+64210000001"
+		},
+		{
+			"key": "password",
+			"value": "Secret123!"
+		},
+		{
+			"key": "newPassword",
+			"value": "NewSecret123!"
+		},
+		{
+			"key": "otpCode",
+			"value": "123456"
+		},
+		{
+			"key": "customerId",
+			"value": "1"
+		},
+		{
+			"key": "accountNumberFrom",
+			"value": "NZ12-1234-1111111-00"
+		},
+		{
+			"key": "accountNumberTo",
+			"value": "NZ12-1234-2222222-00"
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": ""
+		},
+		{
+			"key": "resetToken",
+			"value": ""
+		},
+		{
+			"key": "resetTokenExpiresIn",
+			"value": ""
+		}
+	]
+}

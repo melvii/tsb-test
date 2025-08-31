@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: tsb_bank
+      POSTGRES_USER: tsb
+      POSTGRES_PASSWORD: tsb
+    ports:
+      - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+  app:
+    build: .
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tsb_bank
+      SPRING_DATASOURCE_USERNAME: tsb
+      SPRING_DATASOURCE_PASSWORD: tsb
+      APP_CORS_ALLOWED-ORIGINS: http://localhost:5173
+      TWILIO_ACCOUNT_SID: AC48f275f3b368ef7767a34f07e33516fb
+      TWILIO_AUTH_TOKEN: 318913a7d7e9bedebacb62f15e8d5a52
+      TWILIO_VERIFY_SERVICE_SID: VAed91b4749b31090c53e6ecafcd0453b0
+    ports:
+      - "8080:8080"
+volumes:
+  dbdata:
