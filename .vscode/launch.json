@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-Application<banking-api>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.tsb.banking.Application",
+            "projectName": "banking-api",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

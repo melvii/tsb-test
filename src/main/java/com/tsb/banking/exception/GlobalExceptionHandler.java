@@ -1,6 +1,8 @@
 package com.tsb.banking.exception;
 
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
@@ -45,7 +48,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> generic(Exception ex) {
-        System.out.println(ex);
+        log.error("Exception occured ",ex);
         return ResponseEntity.status(500).body(new ApiError("INTERNAL_ERROR", "Something went wrong"));
     }
 }

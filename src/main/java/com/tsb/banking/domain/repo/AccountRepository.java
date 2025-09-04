@@ -21,4 +21,24 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select a from Account a where a.accountNumberHash = :hash")
     Optional<Account> findForUpdateByHash(@Param("hash") String hash);
+
+
+    @Query("""
+    select c.fullName from Account a join a.customer c
+    where a.accountNumberHash = :hash
+  """)
+  Optional<String> findHolderNameByHash(@Param("hash") String hash);
+
+  @Query("""
+    select a.accountNumber from Account a
+    where a.accountNumberHash = :hash
+  """)
+  Optional<String> findPlainNumberByHash(@Param("hash") String hash);
+
+
+
+// AccountRepository.java
+boolean existsByCustomer_EmailAndAccountNumberHash(String email, String accountNumberHash);
+
+
 }

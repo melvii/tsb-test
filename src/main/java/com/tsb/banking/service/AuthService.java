@@ -2,8 +2,10 @@ package com.tsb.banking.service;
 
 import com.tsb.banking.audit.AuditEvent;
 import com.tsb.banking.config.security.jwt.JwtService;
+import com.tsb.banking.crypto.HmacService;
 import com.tsb.banking.domain.entity.Customer;
 import com.tsb.banking.domain.entity.RefreshToken;
+import com.tsb.banking.domain.repo.AccountRepository;
 import com.tsb.banking.domain.repo.AuditEventRepository;
 import com.tsb.banking.domain.repo.CustomerRepository;
 import com.tsb.banking.domain.repo.RefreshTokenRepository;
@@ -32,6 +34,10 @@ public class AuthService {
     private final AuthenticationManager authManager;
     private final JwtService jwt;
     private final AuditEventRepository auditRepo;
+    private final HmacService hmac;
+    private final AccountRepository accounts;
+
+
 
     @Transactional
     public void register(RegisterRequest req) {
@@ -95,4 +101,15 @@ public TokenResponse login(LoginRequest req) {
         refreshTokens.saveAndFlush(token);
         return new TokenResponse(access, refresh);
     }
+
+
+  public boolean canAccessAccount(String accountNumber, Authentication auth) {
+    var email = auth.getName();
+    var isAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+    var hash = hmac.hmacHex(accountNumber.trim());
+    return accounts.findByAccountNumberHash(hash)
+      .map(a -> isAdmin || a.getCustomer().getEmail().equals(email))
+      .orElse(false);
+  }
+
 }

@@ -18,13 +18,11 @@ public class TwilioVerifyGateway implements SmsOtpGateway {
 
     @PostConstruct
     void init() { Twilio.init(accountSid, authToken); 
-        System.out.println(accountSid+authToken+serviceSid);
     }
 
 
     @Override
     public void sendOtp(String phoneE164) {
-        System.out.println(phoneE164);
         Verification.creator(serviceSid, phoneE164, "sms").create();
     }
 

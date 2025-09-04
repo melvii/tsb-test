@@ -32,7 +32,6 @@ public class PasswordResetService {
         customers.findByEmailOrPhone(emailOrPhone, emailOrPhone).ifPresent(c -> {
             // Send OTP only if we actually have a user
             if (c.getPhone() == null || !c.getPhone().startsWith("+")) return;
-            System.out.println(c.getPhone().trim());
             otp.sendOtp(c.getPhone().trim());
             audit.save(AuditEvent.builder()
                     .actor(c.getEmail())

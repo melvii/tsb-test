@@ -26,4 +26,9 @@ public class Txn {
   @Column(nullable=false)
   @Builder.Default
   private Instant createdAt = Instant.now();
+
+  // com.tsb.banking.domain.entity.Txn
+  @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "transfer_id")
+  private Transfer transfer;
+
 }
